@@ -14,7 +14,7 @@ export default () => {
     let [Data, SetData] = useState<Array<string>>([]);
 
     useEffect(() => {
-        axios.get('http://localhost:3000').then((res: AxiosResponse<Array<DataBaseType>>) => {
+        axios.get('/api/ma/testData').then((res: AxiosResponse<Array<DataBaseType>>) => {
             let temp: Array<string> = []
             res.data.forEach(x => {
                 temp.push(x.Database)
@@ -27,10 +27,10 @@ export default () => {
 
     return (
         <>
-            <Row gutter={16}>
+            <Row justify={"start"}>
                 {Data.map((value, index, array) => {
                     return (
-                        <Col style={{marginTop: "10px"}} flex={1} key={index}>
+                        <Col style={{marginTop: "10px"}} flex={1}>
                             <Card title={"数据库名:" + value} style={{width: 300}} extra={[
                                 <Button onClick={_ => history.push('database/' + value)}>打开</Button>
                             ]}>

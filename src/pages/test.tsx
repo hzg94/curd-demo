@@ -5,9 +5,9 @@ import {
 } from '@ant-design/icons';
 import type {MenuProps} from 'antd';
 import {useRoutes} from 'umi';
-import {Breadcrumb, Layout, Menu} from 'antd';
+import {Layout, Menu} from 'antd';
 import DataBaseCard from "@/pages/Component/DataBaseCard/DataBaseCard";
-import Card from './Component/Debug/Card';
+import Card from './Component/DataBaseInfoCard/Card';
 
 const {Header, Content, Footer, Sider} = Layout;
 
@@ -56,7 +56,7 @@ const App: React.FC = () => {
                                 element: <DataBaseCard/>,
                             },
                             {
-                                path: "/*",
+                                path: "/database/*",
                                 element: <Card/>,
                             },
                         ])
