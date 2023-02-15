@@ -56,7 +56,7 @@ const App: React.FC = () => {
                                 element: <DataBaseCard/>,
                             },
                             {
-                                path: "debug",
+                                path: "/*",
                                 element: <Card/>,
                             },
                         ])

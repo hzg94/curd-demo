@@ -35,6 +35,7 @@ const onClick: MenuProps['onClick'] = (e) => {
 };
 
 export default withRouter((props: RouteComponentProps) => {
+
     useEffect(() => {
         console.log(props)
     }, [])

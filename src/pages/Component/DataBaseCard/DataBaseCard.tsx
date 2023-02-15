@@ -32,7 +32,7 @@ export default () => {
                     return (
                         <Col style={{marginTop: "10px"}} flex={1} key={index}>
                             <Card title={"数据库名:" + value} style={{width: 300}} extra={[
-                                <Button onClick={_ => history.push('test/debug')}>打开</Button>
+                                <Button onClick={_ => history.push('database/' + value)}>打开</Button>
                             ]}>
                                 <span>备注:</span>
                                 <TextArea rows={4} placeholder="test" maxLength={6}/>
