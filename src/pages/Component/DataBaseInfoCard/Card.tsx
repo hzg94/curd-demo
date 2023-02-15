@@ -1,10 +1,9 @@
 import React, {useEffect, useState} from 'react';
 import style from './Card.css'
-import {Button, Divider, Menu, Table} from 'antd';
 import type {MenuProps} from 'antd';
-import {CheckOutlined, CloseOutlined, DoubleRightOutlined, KeyOutlined, LeftOutlined} from '@ant-design/icons';
-import {withRouter} from "umi";
-import {history} from "umi";
+import {Button, Divider, Menu, Table} from 'antd';
+import {CheckOutlined, CloseOutlined, DoubleRightOutlined, LeftOutlined} from '@ant-design/icons';
+import {history, withRouter} from "umi";
 import axios from 'axios';
 import {LevelState} from "@/pages/Modal/PageModal";
 import type {ColumnsType} from 'antd/es/table';
