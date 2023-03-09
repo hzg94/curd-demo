@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import {ApiOutlined, HomeOutlined, PieChartOutlined, SettingOutlined,} from '@ant-design/icons';
+import {ApiOutlined, HomeOutlined, KeyOutlined, PieChartOutlined, SettingOutlined,} from '@ant-design/icons';
 import type {MenuProps} from 'antd';
 import {ConfigProvider, Layout, Menu, theme} from 'antd';
 import {history, useRoutes} from "umi";
@@ -34,7 +34,8 @@ const items: MenuItem[] = [
     getItem('数据库管理', '1', <SettingOutlined/>),
     getItem('模型生成', '2', <PieChartOutlined/>),
     getItem('接口生成', '3', <ApiOutlined/>),
-    getItem('项目设置', '4', <SettingOutlined/>)
+    getItem('权限管理', '4', <KeyOutlined/>),
+    getItem('项目设置', '5', <SettingOutlined/>)
 ];
 
 
@@ -56,6 +57,10 @@ const Routes = [
         element: <InterFaceGenerator/>
     },
     {
+        path: "/auth/*",
+        element: "s"
+    },
+    {
         path: "/setting",
         element: <SettingPage/>
     }
@@ -63,7 +68,7 @@ const Routes = [
 
 const ReturnSelectKey = () => {
     let SelectKey = "0"
-    if(window.location.pathname == '/'){
+    if (window.location.pathname == '/') {
         return SelectKey
     }
     let url = window.location.pathname.split("/")[1] as string
@@ -74,19 +79,19 @@ const ReturnSelectKey = () => {
             return
         }
     })
-    return  SelectKey
+    return SelectKey
 }
 
 const App: React.FC = () => {
     const [collapsed, setCollapsed] = useState(false);
 
     const demo = useSnapshot(ProjectSettingStatus)
-    
+
 
     return (
         <ConfigProvider
             theme={{
-                algorithm: Reflect.get(theme,demo.ProjectTheme)
+                algorithm: Reflect.get(theme, demo.ProjectTheme)
             }}>
             <Layout style={{minHeight: '100vh'}}>
                 <Sider theme={"light"} collapsible collapsed={collapsed} onCollapse={(value) => setCollapsed(value)}>
