@@ -2,14 +2,16 @@ import {defineConfig} from "umi";
 
 export default defineConfig({
     routes: [
-        {path: "/*", component: "test"},
+        {path: "/*", component: "index"}
     ],
     npmClient: 'pnpm',
-    plugins: ["@umijs/plugins/dist/valtio"],
-    valtio: {},
+    chainWebpack(memo, { env, webpack }){
+        memo.devServer.http2(true)
+        // memo.devServer.https(true)
+    },
     proxy: {
         '/api': {
-            'target': 'http://192.168.1.152:8080',
+            'target': 'http://172.18.33.150:8080',
             'changeOrigin': true,
             'pathRewrite': {'/api': '/'},
         }

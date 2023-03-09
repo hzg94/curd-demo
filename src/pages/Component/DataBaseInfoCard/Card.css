@@ -1,9 +1,8 @@
 .demo {
-    margin-top: 12px;
     width: 80vw;
     height: 80vh;
-    border: 1px solid rgba(5, 5, 5, 0.06);
     border-radius: 6px;
+    margin-left: 20px;
 }
 
 .HeadBackButton {

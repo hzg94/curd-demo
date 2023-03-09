@@ -1,4 +1,4 @@
-import {proxy} from 'umi';
+import {proxy} from 'valtio';
 
 
 const LevelState = proxy({Level: 2})

@@ -5,3 +5,9 @@ body {
 .ant-menu::-webkit-scrollbar {
     display: none;
 }
+.ant-table-wrapper::-webkit-scrollbar {
+    display: none;
+}
+*::-webkit-scrollbar {
+    display: none;
+}

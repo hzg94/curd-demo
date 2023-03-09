@@ -1,12 +1,12 @@
 import React, {useEffect, useState} from 'react';
 import style from './Card.css'
-import type {MenuProps} from 'antd';
-import {Button, Divider, Menu, Table} from 'antd';
+import {Button, Divider, Input, Menu, MenuProps, Modal, Select, Table, theme} from 'antd';
 import {CheckOutlined, CloseOutlined, DoubleRightOutlined, LeftOutlined} from '@ant-design/icons';
 import {history, withRouter} from "umi";
 import axios from 'axios';
 import {LevelState} from "@/pages/Modal/PageModal";
 import type {ColumnsType} from 'antd/es/table';
+import CodeHighLightDiv from "@/pages/Component/CodeHighLightDiv/CodeHighLightDiv";
 
 type MenuItem = Required<MenuProps>['items'][number];
 
@@ -28,7 +28,9 @@ function getItem(
 
 interface DataType {
     nullAble: boolean,
-    autoIncrement: boolean
+    autoIncrement: boolean,
+    primaryKey:boolean,
+    columnSize:number
 }
 
 const columns: ColumnsType<DataType> = [
@@ -40,17 +42,42 @@ const columns: ColumnsType<DataType> = [
     {
         title: '类型',
         dataIndex: 'columnType',
-        key: 'columnType',
+        key: 'columnName',
+        render:()=>{
+            return (
+                <>
+                    <Select
+                        defaultValue="auto"
+                        style={{ width: 120 }}
+                        options={[
+                            { value: 'auto', label: 'auto' },
+                            { value: 'string', label: 'string' },
+                            { value: 'int', label: 'int' },
+                            { value: 'double', label: 'double' },
+                            { value: 'float', label: 'float' },
+                            { value: 'date', label: 'date' },
+                            { value: 'enum', label: 'enum' },
+                            { value: 'boolean', label: 'boolean' },
+                        ]}
+                    />
+                </>
+            )
+        }
     },
     {
         title: '长度',
         dataIndex: 'columnSize',
-        key: 'columnSize',
+        key: 'columnName',
+        render:(_, {columnSize})=>{
+            return (
+                <Input maxLength={3} style={{width:"50px"}} defaultValue={columnSize} />
+            )
+        }
     },
     {
         title: '不能为空',
         key: 'nullAble',
-        dataIndex: 'nullAble',
+        dataIndex: 'columnName',
         render: (_, {nullAble}) => {
             if (nullAble) {
                 return <CheckOutlined/>;
@@ -60,11 +87,11 @@ const columns: ColumnsType<DataType> = [
         },
     },
     {
-        title: '自动递增',
-        key: 'autoIncrement',
-        dataIndex: 'autoIncrement',
-        render: (_, {autoIncrement}) => {
-            if (autoIncrement) {
+        title: '主键',
+        key: 'primaryKey',
+        dataIndex: 'columnName',
+        render: (_, {primaryKey}) => {
+            if (primaryKey) {
                 return <CheckOutlined/>;
             } else {
                 return <CloseOutlined/>;
@@ -72,23 +99,24 @@ const columns: ColumnsType<DataType> = [
         },
     },
     {
-        title: '注释',
-        key: 'columnRemarks',
-        dataIndex: 'columnRemarks'
-    },
-    {
-        title: 'Action',
-        key: 'action',
-        render: (_, record) => (
-            <a>
-                1
-            </a>
-        ),
-    },
+        title: '自动递增',
+        key: 'autoIncrement',
+        dataIndex: 'columnName',
+        render: (_, {autoIncrement}) => {
+            if (autoIncrement) {
+                return <CheckOutlined/>;
+            } else {
+                return <CloseOutlined/>;
+            }
+        },
+    }
 ];
 
+const { useToken } = theme;
 
 export default withRouter((props) => {
+
+    const { token } = useToken();
 
     let [TableName, SetTableName] = useState<string>('null')
 
@@ -97,6 +125,8 @@ export default withRouter((props) => {
     let [MenuItem, SetMenuItem] = useState<Array<any>>([])
 
     let [TableInfo, SetTableInfo] = useState<Array<any>>([])
+
+    const [isModalOpen, setIsModalOpen] = useState(false);
 
     const OpenTable = (TableName: string) => {
         axios.get(`/api/ma/testTableEX?database=${DataBaseName}&table=${TableName}`).then(res => {
@@ -117,19 +147,25 @@ export default withRouter((props) => {
 
 
     useEffect(() => {
+        //分析url
+        const url = props.location?.pathname.split('/') as Array<string>
+        const DataBaseName = url[3]
         //记忆
         const MenuSelect = window.localStorage.getItem('MenuSelect')
         if (MenuSelect != null) {
             SetTableName(MenuSelect)
+            axios.get(`/api/ma/testTableEX?database=${DataBaseName}&table=${MenuSelect}`).then(res => {
+                SetTableInfo(res.data.tableColumns)
+            })
+            LevelState.Level = 3
         }
-        //分析url
-        const url = props.location?.pathname.split('/') as Array<string>
-        SetDataBaseName(url[2])
-        if (url.length == 4) {
-            SetTableName(url[3])
+        SetDataBaseName(DataBaseName)
+        if (url.length == 5) {
+            const TableName = url[4]
+            SetTableName(TableName)
         }
         //异步数据库获取
-        axios.get('/api/ma/testTable?database=' + url[2]).then(res => {
+        axios.get('/api/ma/testTable?database=' + DataBaseName).then(res => {
             let ItemList: Array<MenuItem> = []
             res.data.forEach((data: any, index: number) => {
                 ItemList.push(
@@ -137,19 +173,19 @@ export default withRouter((props) => {
                 )
             })
             SetMenuItem([
-                getItem(url[2], 'Top', null, ItemList),
+                getItem(DataBaseName, 'Top', null, ItemList),
             ])
         })
     }, [])
 
 
     return (
-        <div className={style.demo}>
+        <div className={style.demo} style={{border: "1px solid "+token.colorBorder}}>
             <div className={style.HeadDiv}>
                 <Button className={style.HeadBackButton} onClick={() => {
-                    history.push('/')
+                    history.push('/databases/')
                 }} shape="circle" icon={<LeftOutlined/>}/>
-                <span className={style.HeadTitle}>
+                <span className={style.HeadTitle} style={{color:token.colorText}}>
                     <>
                         数据库:{DataBaseName}
                         {
@@ -158,11 +194,17 @@ export default withRouter((props) => {
                         }
                     </>
             </span>
+                <Modal width="500" title="代码预览" open={isModalOpen} onOk={_=> {
+                    setIsModalOpen(false)
+                }}
+                       onCancel={_ => setIsModalOpen(false)} cancelText="关闭" okText="test">
+                    <CodeHighLightDiv database={DataBaseName}  tableName={TableName}/>
+                </Modal>
                 <div className={style.HeadActionDiv}>
                     {
                         LevelState.Level == 3 ? <>
+                            <Button style={{marginRight: "10px"}} onClick={_ => setIsModalOpen(true)}>生成</Button>
                             <Button style={{marginRight: "10px"}} onClick={CloseTable}>关闭数据表</Button>
-                            <Button style={{marginRight: "10px"}}>生成</Button>
                         </> : <></>
                     }
                 </div>
@@ -183,7 +225,7 @@ export default withRouter((props) => {
                 <div className={style.BodyRightDiv}>
                     {
                         LevelState.Level == 3 ? <>
-                            <Table columns={columns} dataSource={TableInfo}/>
+                            <Table style={{overflowY:"scroll",height:"70vh"}} rowKey={x => x.columnName} columns={columns} dataSource={TableInfo}/>
                         </> : <></>
                     }
                 </div>
